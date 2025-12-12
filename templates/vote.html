@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Votación</h2>
+<p style="font-size:0.9rem; color:#555; margin-top:4px;">
+    Selecciona un candidato para cada categoría. Es obligatorio votar en todas.
+</p>
+<p style="font-size:0.85rem; color:#444; margin-top:8px;">
+    Puedes enviar tu voto una vez y modificarlo <strong>solo una vez más</strong>.
+    <br>
+    Envios usados: <strong>{{ submissions }}</strong> / {{ max_submissions }}
+</p>
+
+<form method="post" style="margin-top:18px;">
+    {% for cat_index, category_name in category_data %}
+        <div class="category-block">
+            <div class="category-title">
+              {{ category_name }}
+              <span class="badge">Obligatorio</span>
+              <div style="font-size:0.75rem; font-style:italic; opacity:0.5; margin-top:4px;">
+                {{ category_desc[cat_index] }}
+              </div>
+            </div>            
+            <select name="category_{{ cat_index }}" {% if not can_still_edit %}disabled{% endif %}>
+                <option value="">-- Selecciona un candidato --</option>
+                {% for cand_index, candidate_name in candidates_data %}
+                    {% set current_vote = existing_votes.get(cat_index) %}
+                    <option value="{{ cand_index }}"
+                        {% if current_vote is not none and current_vote == cand_index %}selected{% endif %}>
+                        {{ candidate_name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+    {% endfor %}
+
+    {% if can_still_edit %}
+        <button type="submit" class="btn">Guardar voto</button>
+    {% else %}
+        <p style="font-size:0.9rem; color:#b00; margin-top:10px;">
+            Ya has usado tu voto y tu cambio. No puedes modificar las selecciones.
+        </p>
+    {% endif %}
+</form>
+{% endblock %}

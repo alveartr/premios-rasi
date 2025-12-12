@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Resultados en tiempo real</h2>
+<p style="font-size:0.9rem; color:#555; margin-top:4px;">
+    Conteo de votos por categoría y candidato.
+</p>
+
+{% for cat_index, category_name in enumerate(categories) %}
+    <h3 style="margin-top:20px; margin-bottom:6px;">{{ category_name }}</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Candidato</th>
+                <th>Votos</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cand_index, candidate_name in enumerate(candidates) %}
+                <tr>
+                    <td>{{ candidate_name }}</td>
+                    <td>{{ results_data[cat_index][cand_index] }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endfor %}
+{% endblock %}

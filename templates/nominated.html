@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Nominados por categoría</h2>
+<p style="font-size:0.9rem; color:#555; margin-top:4px;">
+    Se muestran los <strong>5 nominados</strong> con mayor votación en cada categoría,
+    ordenados alfabéticamente. No se muestran cantidades de votos.
+</p>
+
+{% for cat_index, category_name in category_data %}
+    <h3 style="margin-top:20px; margin-bottom:6px;">{{ category_name }}</h3>
+    {% set nominados = nominated_data.get(cat_index, []) %}
+    {% if nominados %}
+        <ul style="margin-top:4px;">
+            {% for name in nominados %}
+                <li>{{ name }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p style="font-size:0.85rem; color:#777;">
+            Aún no hay suficientes votos para esta categoría.
+        </p>
+    {% endif %}
+{% endfor %}
+{% endblock %}

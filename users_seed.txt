@@ -1,0 +1,22 @@
+Usuarios y contraseñas - Premios Leyendas de RASI
+
+Usuario: candidato1   | Contraseña: Rasi2025_1
+Usuario: candidato2   | Contraseña: Rasi2025_2
+Usuario: candidato3   | Contraseña: Rasi2025_3
+Usuario: candidato4   | Contraseña: Rasi2025_4
+Usuario: candidato5   | Contraseña: Rasi2025_5
+Usuario: candidato6   | Contraseña: Rasi2025_6
+Usuario: candidato7   | Contraseña: Rasi2025_7
+Usuario: candidato8   | Contraseña: Rasi2025_8
+Usuario: candidato9   | Contraseña: Rasi2025_9
+Usuario: candidato10  | Contraseña: Rasi2025_10
+Usuario: candidato11  | Contraseña: Rasi2025_11
+Usuario: candidato12  | Contraseña: Rasi2025_12
+Usuario: candidato13  | Contraseña: Rasi2025_13
+Usuario: candidato14  | Contraseña: Rasi2025_14
+Usuario: candidato15  | Contraseña: Rasi2025_15
+Usuario: candidato16  | Contraseña: Rasi2025_16
+Usuario: candidato17  | Contraseña: Rasi2025_17
+Usuario: candidato18  | Contraseña: Rasi2025_18
+Usuario: candidato19  | Contraseña: Rasi2025_19
+Usuario: candidato20  | Contraseña: Rasi2025_20

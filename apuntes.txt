@@ -1,0 +1,25 @@
+cd premios_leyendas_rasi
+
+
+1. 
+
+pip install flask
+
+Si esto no funciona, hacer:
+
+python3 -m pip install flask
+
+python3 -m ensurepip --upgrade
+
+
+
+2. python3 app.py
+
+
+3. http://localhost:5000
+
+
+python3 app.py --port 5001
+
+
+http://localhost:5001

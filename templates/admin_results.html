@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Resultados detallados (Admin)</h2>
+<p style="font-size:0.9rem; color:#555; margin-top:4px;">
+    Selecciona una categoría para ver los votos por candidato, ordenados de mayor a menor.
+</p>
+
+<form method="post" style="margin-top:14px; margin-bottom:14px;">
+    <div class="field-group">
+        <label for="category_index">Categoría</label>
+        <select name="category_index" id="category_index">
+            {% for idx, category_name in category_data %}
+                <option value="{{ idx }}" {% if idx == selected_category_index %}selected{% endif %}>
+                    {{ category_name }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    <button type="submit" class="btn">Ver resultados</button>
+</form>
+
+<h3 style="margin-top:10px; margin-bottom:6px;">
+    Resultados para: {{ category_data[selected_category_index][1] }}
+</h3>
+
+<table>
+    <thead>
+        <tr>
+            <th>Candidato</th>
+            <th>Votos</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for name, votes in results_list %}
+            <tr>
+                <td>{{ name }}</td>
+                <td>{{ votes }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,5 @@
+B__pycache__/
+*.pyc
+.env
+users.json
+votes.json

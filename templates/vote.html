@@ -1,7 +1,28 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Votación</h2>
+
+<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+    
+    <h1 style="margin: 0;">
+        Votación
+    </h1>
+
+    {% if not voting_open %}
+        <div style="
+            color: #c62828;
+            font-size: 1.4rem;
+            font-weight: bold;
+            text-align: right;
+        ">
+            La votación se ha cerrado
+        </div>
+    {% endif %}
+
+</div>
+
+{% if voting_open %}
+
 <p style="font-size:0.9rem; color:#555; margin-top:4px;">
     Selecciona un candidato para cada categoría. Es obligatorio votar en todas.
 </p>
@@ -10,6 +31,7 @@
     <br>
     Envios usados: <strong>{{ submissions }}</strong> / {{ max_submissions }}
 </p>
+{% endif %}
 
 <form method="post" style="margin-top:18px;">
     {% for cat_index, category_name in category_data %}
@@ -21,7 +43,7 @@
                 {{ category_desc[cat_index] }}
               </div>
             </div>            
-            <select name="category_{{ cat_index }}" {% if not can_still_edit %}disabled{% endif %}>
+            <select name="category_{{ cat_index }}" {% if not can_still_edit %}disabled{% endif %} {% if not voting_open %}disabled{% endif %}>
                 <option value="">-- Selecciona un candidato --</option>
                 {% for cand_index, candidate_name in candidates_data %}
                     {% set current_vote = existing_votes.get(cat_index) %}
@@ -34,12 +56,17 @@
         </div>
     {% endfor %}
 
+    {% if voting_open %}
+
     {% if can_still_edit %}
-        <button type="submit" class="btn">Guardar voto</button>
+        <button type="submit" {% if not voting_open %}disabled{% endif %} class="btn">Guardar voto</button>
     {% else %}
         <p style="font-size:0.9rem; color:#b00; margin-top:10px;">
             Ya has usado tu voto y tu cambio. No puedes modificar las selecciones.
         </p>
     {% endif %}
+
+    {% endif %}
+    
 </form>
 {% endblock %}

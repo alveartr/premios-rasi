@@ -2,6 +2,7 @@
 
 import os
 import json
+from config import VOTING_OPEN
 from collections import Counter
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 
@@ -208,7 +209,11 @@ def vote():
         if v["user_id"] == user_id:
             existing_votes[v["category_index"]] = v["candidate_index"]
 
-    if request.method == "POST":
+    if not VOTING_OPEN and request.method == "POST":
+        flash(
+            "La votación ya está cerrada. Solo puedes ver tu votación registrada.",
+            "info"
+        )
         if submissions >= MAX_SUBMISSIONS_PER_USER:
             flash("Ya has utilizado tu voto y tu cambio. No puedes modificarlo nuevamente.", "error")
             return redirect(url_for("vote"))
@@ -279,6 +284,7 @@ def vote():
         candidates_data=candidates_data,
         category_desc=CATEGORY_DESCRIPTIONS,
         existing_votes=existing_votes,
+        voting_open=VOTING_OPEN,
         can_still_edit=can_still_edit,
         submissions=submissions,
         max_submissions=MAX_SUBMISSIONS_PER_USER,
@@ -344,8 +350,8 @@ def admin_results():
     - Ve todos los candidatos con cantidad de votos, ordenados de mayor a menor
     """
     user = get_current_user()
-    if not user or not user.get("is_admin", False):
-        flash("Acceso solo para administrador.", "error")
+    if not user:
+        flash("Debes iniciar sesión.", "error")
         return redirect(url_for("login"))
 
     selected_category_index = 0
@@ -386,7 +392,77 @@ def admin_results():
         is_admin=True,
     )
 
+@app.route("/admin/presentation", methods=["GET", "POST"])
+def admin_presentation():
+    user = get_current_user()
+    if not user or not user.get("is_admin", False):
+        flash("Acceso solo para administrador.", "error")
+        return redirect(url_for("login"))
+
+    # categoría seleccionada
+    try:
+        selected_category_index = int(request.values.get("category_index", "0"))
+    except ValueError:
+        selected_category_index = 0
+
+    if selected_category_index < 0 or selected_category_index >= len(CATEGORIES):
+        selected_category_index = 0
+
+    # etapa de revelación: nominees -> second -> first
+    stage = request.values.get("stage", "nominees")
+    if stage not in ("nominees", "second", "first"):
+        stage = "nominees"
+
+    counts = compute_vote_counts()
+    counter = counts[selected_category_index]
+
+    # Lista de candidatos con votos (incluye 0), ordenada por votos desc y nombre asc
+    ordered = []
+    for i, name in enumerate(CANDIDATES):
+        ordered.append((i, counter.get(i, 0), name))
+    ordered.sort(key=lambda x: (-x[1], x[2].lower()))
+
+    # 5 nominados = top 5 por votación (con desempate por nombre), pero mostrados alfabéticamente
+    top5 = ordered[:5]
+    nominees_names = sorted([x[2] for x in top5], key=lambda s: s.lower())
+
+    # Calcular 1er y 2do lugar (con empates)
+    max_votes = max([v for _, v, _ in ordered], default=0)
+    first_place = []
+    first_votes = 0
+    if max_votes > 0:
+        first_votes = max_votes
+        first_place = [(name, votes) for _, votes, name in ordered if votes == max_votes]
+
+    # Segundo lugar = siguiente cantidad distinta menor a max_votes
+    second_votes = None
+    for _, votes, _name in ordered:
+        if votes < max_votes:
+            second_votes = votes
+            break
+
+    second_place = []
+    if second_votes is not None and second_votes > 0:
+        second_place = [(name, votes) for _, votes, name in ordered if votes == second_votes]
+
+    category_data = list(enumerate(CATEGORIES))
+
+    return render_template(
+        "admin_presentation.html",
+        category_data=category_data,
+        selected_category_index=selected_category_index,
+        nominees_names=nominees_names,
+        stage=stage,
+        first_place=first_place,     # lista [(nombre, votos), ...]
+        second_place=second_place,   # lista [(nombre, votos), ...]
+        primary_blue=PRIMARY_BLUE,
+        accent_yellow=ACCENT_YELLOW,
+        white=WHITE,
+        username=session.get("username"),
+        is_admin=True,
+    )
 
 if __name__ == "__main__":
     # En Mac o VPS puedes usar esto directamente
     app.run(host="0.0.0.0", port=5001, debug=False)
+

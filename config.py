@@ -88,3 +88,6 @@ MAX_SUBMISSIONS_PER_USER = 2
 # Archivos de datos (JSON plano)
 USERS_FILE = "users.json"
 VOTES_FILE = "votes.json"
+
+VOTING_OPEN = False  # True = se puede votar / False = votación cerrada
+

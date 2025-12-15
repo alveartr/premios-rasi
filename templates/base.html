@@ -165,6 +165,9 @@
             {% if is_admin %}
                 <a href="{{ url_for('admin_results') }}">Resultados (admin)</a>
             {% endif %}
+            {% if is_admin %}
+              <a href="{{ url_for('admin_presentation') }}">Presentación</a>
+            {% endif %}            
             <a href="{{ url_for('logout') }}">Salir</a>
         {% endif %}
     </div>

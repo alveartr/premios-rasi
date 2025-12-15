@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 1100px; margin: 0 auto; padding: 20px;">
+
+  <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+    <div>
+      <h1 style="margin:0; font-size:2.3rem;">Presentación de Resultados</h1>
+      <div style="opacity:0.75; margin-top:6px; font-size:1.1rem;">
+        Selecciona una categoría y revela 2º y 1º lugar.
+      </div>
+    </div>
+
+    <form method="GET" action="{{ url_for('admin_presentation') }}" style="min-width:320px;">
+      <label style="display:block; font-weight:600; margin-bottom:6px; font-size:1.05rem;">Categoría</label>
+      <select name="category_index"
+        onchange="this.form.submit()"
+        style="
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 1.6rem;
+            font-weight: 700;
+            border-radius: 14px;
+        ">
+        {% for idx, name in category_data %}
+          <option value="{{ idx }}" {% if idx == selected_category_index %}selected{% endif %}>
+            {{ name }}
+          </option>
+        {% endfor %}
+      </select>
+
+      <input type="hidden" name="stage" value="nominees">
+    </form>
+  </div>
+
+  <hr style="margin:22px 0; opacity:0.25;">
+
+  <!-- NOMINADOS -->
+  {% if stage == "nominees" %}
+  <h2 style="font-size:2.0rem; margin:0 0 10px 0;">Nominados</h2>
+  <div style="font-size:1.6rem; line-height:2.2rem;">
+    {% if nominees_names and nominees_names|length > 0 %}
+      <ol style="margin: 0; padding-left: 28px;">
+        {% for n in nominees_names %}
+          <li>{{ n }}</li>
+        {% endfor %}
+      </ol>
+    {% else %}
+      <div style="opacity:0.75;">Aún no hay votos para esta categoría.</div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <div style="margin-top:18px; display:flex; gap:12px; flex-wrap:wrap;">
+    {% if stage == "nominees" %}
+      <form method="GET" action="{{ url_for('admin_presentation') }}">
+        <input type="hidden" name="category_index" value="{{ selected_category_index }}">
+        <input type="hidden" name="stage" value="second">
+        <button type="submit" style="padding:12px 16px; font-size:1.2rem; border-radius:12px;">
+          Ver segundo lugar
+        </button>
+      </form>
+    {% endif %}
+
+    {% if stage == "second" %}
+      <form method="GET" action="{{ url_for('admin_presentation') }}">
+        <input type="hidden" name="category_index" value="{{ selected_category_index }}">
+        <input type="hidden" name="stage" value="first">
+        <button type="submit" style="padding:12px 16px; font-size:1.2rem; border-radius:12px;">
+          Ver primer lugar
+        </button>
+      </form>
+    {% endif %}
+
+    {% if stage == "first" %}
+      <form method="GET" action="{{ url_for('admin_presentation') }}">
+        <input type="hidden" name="category_index" value="{{ selected_category_index }}">
+        <input type="hidden" name="stage" value="nominees">
+        <button type="submit" style="padding:12px 16px; font-size:1.2rem; border-radius:12px;">
+          Reiniciar revelación
+        </button>
+      </form>
+    {% endif %}
+  </div>
+
+  <!-- SEGUNDO LUGAR -->
+{% if stage in ["second", "first"] and first_place|length == 1 %}
+  <div style="margin-top:26px; padding:18px; border-radius:16px; border:1px solid rgba(0,0,0,0.12);">
+    <h2 style="
+    font-size: 2.2rem;
+    margin: 0 0 12px 0;
+    color: #9e9e9e;   /* plata */
+    font-weight: 800;
+    ">
+      🥈 Segundo lugar
+    </h2>
+
+    {% if second_place and second_place|length > 0 %}
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        {% for name, votes in second_place %}
+          <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px;">
+            <div style="font-size:1.85rem; font-weight:700;">{{ name }}</div>
+            <div style="font-size:1.1rem; opacity:0.35; white-space:nowrap;">
+              {{ votes }} votos
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div style="opacity:0.75; font-size:1.2rem;">
+        No hay segundo lugar.
+      </div>
+    {% endif %}
+  </div>
+{% endif %}
+
+  <!-- PRIMER LUGAR -->
+  {% if stage == "first" %}
+    <div style="margin-top:18px; padding:18px; border-radius:16px; border:1px solid rgba(0,0,0,0.12);">
+    <h2 style="
+        font-size: 2.6rem;
+        margin: 0 0 14px 0;
+        color: #d4af37;   /* dorado */
+        font-weight: 900;
+    ">
+      🏆
+      {% if first_place|length > 1 %}
+        Primer lugar (empate)
+      {% else %}
+        Primer lugar
+      {% endif %}
+    </h2>
+
+      {% if first_place and first_place|length > 0 %}
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          {% for name, votes in first_place %}
+            <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px;">
+              <div style="font-size:2.0rem; font-weight:800;">{{ name }}</div>
+              <div style="font-size:1.1rem; opacity:0.35; white-space:nowrap;">{{ votes }} votos</div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div style="opacity:0.75; font-size:1.2rem;">Aún no hay votos para esta categoría.</div>
+      {% endif %}
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}
